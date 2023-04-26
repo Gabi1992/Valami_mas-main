@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 class Szolgaltatas(models.Model):
     kategoria = models.CharField("Kategória", max_length=200, blank=True)
     neve = models.CharField("Szolgáltatás", max_length=200, blank=True)
-    ara = models.CharField("Ára", max_length=200, blank=True)
-    ido = models.CharField("Munkaidő", max_length=200, blank=True)
+    ara = models.IntegerField("Ára", max_length=200, blank=True)
+    ido = models.IntegerField("Munkaidő", max_length=200, blank=True)
     
     def __str__(self):
         return self.neve
@@ -23,6 +23,7 @@ class Megrendelo(models.Model):
     email = models.EmailField("Adja meg a email cimét!",blank=True)
     szolgaltatas = models.ManyToManyField(Szolgaltatas, blank=True)
     auto = models.ForeignKey(Auto, blank=True, on_delete=models.CASCADE)
+    datum = models.CharField("Datum", max_length=200, blank=True)
 
     def __str__(self):
         return self.nev
