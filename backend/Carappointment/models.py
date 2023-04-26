@@ -5,7 +5,7 @@ class Szolgaltatas(models.Model):
     kategoria = models.CharField("Kategória", max_length=200, blank=True)
     neve = models.CharField("Szolgáltatás", max_length=200, blank=True)
     ara = models.IntegerField("Ára (Ft-ban értendő)", blank=True)
-    ido = models.IntegerField("Munkaidő (perc)", blank=True)
+    ido = models.IntegerField("Munkaidő (percben értendő)", blank=True)
     
     def __str__(self):
         return self.neve
