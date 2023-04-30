@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-scroll";
 import styled from "styled-components";
 
-export default function ProjectBox({ img, title, text, action}) {
+export default function ServiceBox({ img, name, text, action}) {
   return (
     <Wrapper>
       <Link to="pricing" smooth={true}>
@@ -10,7 +10,7 @@ export default function ProjectBox({ img, title, text, action}) {
           <img className="radius8" src={img} alt="project"></img>
         </ImgBtn>
       </Link>
-      <h3 className="font20 extraBold" style={{ fontVariant: "all-small-caps" }}>{title}</h3>
+      <h3 className="font20 extraBold" style={{ fontVariant: "all-small-caps" }}>{name}</h3>
       <p className="font13">{text}</p>
     </Wrapper>
   );

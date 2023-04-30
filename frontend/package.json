@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^2.16.0",
-    "@emotion/react": "^11.10.6",
+    "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.12.1",
     "@mui/x-date-pickers": "^6.2.0",
@@ -27,6 +27,7 @@
     "react-web-config": "^1.0.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.8",
+    "tss-react": "^4.8.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

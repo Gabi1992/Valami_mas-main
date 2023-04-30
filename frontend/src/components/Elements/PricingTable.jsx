@@ -1,99 +1,74 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import styled from "styled-components";
 
-// Assets
-import AxleIcon from "../../assets/svg/Services/AxleIcon";
-import BreakIcon from "../../assets/svg/Services/BreakIcon";
-import WheelIcon from "../../assets/svg/Services/WheelIcon";
-
-import { API_URL } from '../../constant/apiConstant';
-
-export default function PricingTable({ icon, priceFrom, category, text, action }) {
-  let getIcon;
-
-  switch (icon) {
-    case "axle":
-      getIcon = <AxleIcon />;
-      break;
-    case "break":
-      getIcon = <BreakIcon />;
-      break;
-    case "wheel":
-      getIcon = <WheelIcon />;
-      break;
-    default:
-      getIcon = "";
-      break;
-  }
-
-  const [services, setServices] = useState([ ])
-
-  useEffect(() => {
-    fetch(API_URL+"szolgaltatasok/")
-    .then(res => res.json())
-    .then(data => {
-      setServices(data)
-      console.log(data)
-    })
-  }, [ ])
-
-  const categories = []
-  const categoriesOther = []
-  const categoriesBreaks = []
-  const categoriesFilter = []
-  const categoriesExhaust = []
-  const categoriesAxle = []
-  const categoriesServices = []
-  const categoriesMOT = []
-
-  for (let index = 0; index < services.length; index++) {
-    const kategoria = services[index].kategoria;
-    if (!categories.includes(kategoria)) {
-      categories.push(kategoria);
-    }
-  }
-
-  category = ""
-  for (let index = 0; index < categories.length; index++) {
-    category = categories[index]
-  }
-
-  console.log(categories)
-
-    for (let index = 0; index < services.length; index++) {
-      const kategoria = services[index].kategoria;
-      if (!categories.includes(kategoria)) {
-        categories.push(kategoria);
-      }
-    }
+export default function PricingTable({ priceFrom, categoryTitle, categoryDescription, offers, action }) {
 
   return (
-    <Wrapper className="whiteBg radius8 shadow">
-      <div className="flexSpaceCenter">
-        {getIcon}
-        <p style={{ fontVariant: "all-small-caps" }} className="font30 extraBold">{priceFrom}</p>
-      </div>
-        <div style={{ margin: "30px 0" }}>
-          <h4 style={{ fontVariant: "all-small-caps" }} className="font30 extraBold">{category}</h4>
-        </div>
-      <div>
-        {services
-          ? services.map((item, index) => (
-            <div>
-              {item.neve}
-              {item.ara}
-              {item.ido}
+    <Table>
+      <thead>
+        <TableRow>
+          <TableHeader colSpan="3">
+            <div className="flexSpaceCenter">
+              <h4 className="font20 bold">{categoryTitle}</h4>
+              <p className="font20 bold">{priceFrom}</p>
             </div>
-            ))
-          : null}
-      </div>
-    </Wrapper>
+          </TableHeader>
+        </TableRow>
+        <TableRow>
+          <TableHeader>Szerviz tipusa</TableHeader>
+          <TableHeader>Ara</TableHeader>
+          <TableHeader>Ido (perc)</TableHeader>
+        </TableRow>
+      </thead>
+      <tbody>
+        {offers ? offers.map((item, index) => (
+          <TableRow key={index}>
+            <TableCell>{item.name}</TableCell>
+            <TableCell>{item.price}</TableCell>
+            <TableCellTime>{item.time}</TableCellTime>
+          </TableRow>
+        )) : null}
+      </tbody>
+    </Table>
   );
-}
+};
 
-const Wrapper = styled.div`
+const Table = styled.table`
+  border-collapse: collapse;
+  border-spacing: 0;
   width: 100%;
-  text-align: left;
-  padding: 20px 30px;
-  margin-top: 30px;
+  font-size: 14px;
+  @media (max-width: 768px) {
+    font-size: 12px;
+    width: 100%;
+  }
 `;
+
+const TableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: #f8f8f8;
+  }
+`;
+
+const TableHeader = styled.th`
+  padding: 16px;
+  text-align: left;
+  font-weight: bold;
+  color: #444;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+`;
+
+const TableCell = styled.td`
+  padding: 16px;
+  text-align: left;
+  color: #444;
+  border-bottom: 1px solid #ddd;
+`; 
+
+const TableCellTime = styled.td`
+  padding: 16px;
+  text-align: center;
+  color: #444;
+  border-bottom: 1px solid #ddd;
+`; 

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 // Components
 import ServiceBox from "../Elements/ServiceBox";
@@ -9,18 +9,23 @@ import ServiceImg3 from "../../assets/img/services/tires.png";
 import { API_URL } from "../../constant/apiConstant";
 
 export default function Services() {
-  
-  const [services, setServices] = useState([ ])
-  const [servicePrice, setServicePrice] = useState([ ])
-  const [serviceTime, setServiceTime] = useState([ ])
 
+  const [services, setServices] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(API_URL+"api/szolgaltatasok/");
+        const response = await fetch(API_URL + "api/szolgaltatasok/");
         const data = await response.json();
-        setServices(data);
+        const servicesObj = {};
+        for (const service of data) {
+          if (!servicesObj[service.kategoria]) {
+            servicesObj[service.kategoria] = [service];
+          } else {
+            servicesObj[service.kategoria].push(service);
+          }
+        }
+        setServices(servicesObj);
       } catch (error) {
         console.error(error);
       }
@@ -29,6 +34,18 @@ export default function Services() {
     fetchData();
   }, []);
 
+  const getServiceImage = (kategoria) => {
+    switch(kategoria) {
+      case 'FÉKJAVÍTÁS':
+        return ServiceImg2;
+      case 'FUTÓMŰ':
+        return ServiceImg1;
+      case 'Tires':
+        return ServiceImg3;
+      default:
+        return ServiceImg1;
+    }
+  }
 
   return (
     <Wrapper id="services">
@@ -37,31 +54,19 @@ export default function Services() {
           <HeaderInfo>
             <h1 className="font40 extraBold">Services</h1>
             <p className="font13">
-            Our professionals know how to handle a wide range of car services. Whether you drive a passenger car or medium sized truck or SUV, our mechanics strive to ensure that your vehicle will be performing at its best.
+              Our professionals know how to handle a wide range of car services. Whether you drive a passenger car or medium sized truck or SUV, our mechanics strive to ensure that your vehicle will be performing at its best.
             </p>
           </HeaderInfo>
           <div className="row textCenter">
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-              <ServiceBox
-                id="breaks"
-                img={ServiceImg2}
-                name="BREAKS"
-              />
-            </div>
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-              <ServiceBox
-                id="axle"
-                img={ServiceImg1}
-                name="AXLE"
-              />
-            </div>
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-              <ServiceBox
-                id="tires"
-                img={ServiceImg3}
-                name="TIRE AND WHEEL SERVICES"
-              />
-            </div>
+            {Object.keys(services).map((kategoria, index) => (
+              <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4" key={index}>
+                <ServiceBox
+                  id={services[kategoria][0].id}
+                  img={getServiceImage(kategoria)}
+                  name={kategoria}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>

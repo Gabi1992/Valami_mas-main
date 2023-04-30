@@ -1,24 +1,102 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from '@mui/material/Select';
-import Slider from '@mui/material/Slider';
-
+import Slider, { SliderMarkLabel } from '@mui/material/Slider';
 import dayjs from 'dayjs';
 import { API_URL } from "../../constant/apiConstant";
-import { FormControl, Input, InputLabel, TextField } from "@mui/material";
+import { FormControl, Input, InputLabel, TextField, MenuItem, Checkbox, ListSubheader, Button } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
-import ServicesSelect from "../Elements/ServicesSelect";
+import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import Container from '@mui/material/Container';
 
 export default function Contact() {
 
+  //Services dropdown and storage
+  const [options, setOptions] = useState([]);
+  const [selectedServiceOptions, setSelectedServiceOptions] = useState([]);
+  const [selectedServiceOptionIds, setSelectedServiceOptionIds] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(API_URL+"api/szolgaltatasok/");
+        const data = await response.json();
+        setOptions(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleServiceOptionToggle = (option) => {
+    const currentIndex = selectedServiceOptions.indexOf(option.id);
+    const newSelectedServiceOptions = [...selectedServiceOptions];
+    const newSelectedServiceOptionIds = [...selectedServiceOptionIds];
+
+    if (currentIndex === -1) {
+      newSelectedServiceOptions.push(option.id);
+      newSelectedServiceOptionIds.push(option.id);
+    } else {
+      newSelectedServiceOptions.splice(currentIndex, 1);
+      newSelectedServiceOptionIds.splice(currentIndex, 1);
+    }
+
+    setSelectedServiceOptions(newSelectedServiceOptions);
+    setSelectedServiceOptionIds(newSelectedServiceOptionIds);
+  };
+
+  const categoryOptions = options.reduce((acc, option) => {
+    if (!acc[option.kategoria]) {
+      acc[option.kategoria] = [];
+    }
+    acc[option.kategoria].push(option);
+    return acc;
+  }, {});
+
+  const menuItems = Object.keys(categoryOptions).map((category) => ([
+    <ListSubheader key={category}>{category}</ListSubheader>,
+    ...categoryOptions[category].map((option) => (
+      <MenuItem key={option.id} value={option.id} data-id={option.id}>
+        <Checkbox
+          checked={selectedServiceOptions.indexOf(option.id) !== -1}
+          onChange={() => handleServiceOptionToggle(option)}
+        />
+        <span>{option.neve}</span>
+      </MenuItem>
+    ))
+  ]));
+
+  //Cars dropdown and storage
+  const [data, setData] = useState([]);
+  const [selectedCarId, setSelectedCarId] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(API_URL+"api/autok/");
+      const data = await response.json();
+      setData(data);
+    };
+    fetchData();
+  }, []);
+
+  const handleCarOptionChange = (event) => {
+    setSelectedCarId(event.target.value);
+  };
+
+  // Weekend validation
   const isWeekend = (date) => {
     const day = date.day();
   
     return day === 0 || day === 6;
   };
+
+  const handleClearSelection = () => {
+    setSelectedServiceOptions([]);
+    setSelectedServiceOptionIds([]);
+  }
 
   const getCurrentYear = () => {
     return new Date().getFullYear();
@@ -27,32 +105,28 @@ export default function Contact() {
 
   //Variables to be POSTed
   const [currentYear, setCurrentYear] = React.useState(getCurrentYear);
-  const [selectedDate, setSelectedDate] = useState([ ]);
   const [name, setName] = useState([ ])
   const [email, setEmail] = useState([ ])
   const [phone, setPhone] = useState([ ])
-  const [service, setService] = useState([ ])
-  const [vehicleYear, setVehicleYear] = useState([ ])
-  const [vehicleMake, setVehicleMake] = useState([ ])
-  const [orderDate, setOrderDate] = useState([ ])
+  const [orderDate, setOrderDate] = useState(dayjs().format('YYYY/MM/DD'));
   const [orderTime, setOrderTime] = useState(dayjs())
 
   const handleSliderChange = (event, newValue) => {
     setCurrentYear(newValue);
   };
 
-
 //Sending order function
-function sendOrder() { 
+/* function sendOrder() { 
   let data = {
     "nev": name,
     "telefonszam": phone,
     "email": email,
-    "auto": 2,
-    "szolgaltatas": [1, 2]
+    "auto": selectedCarId,
+    "szolgaltatas": selectedServiceOptionIds,
+    "datum": orderDate,
     }
   
-  fetch(API_URL+"createmegrendelok/",{
+  fetch(API_URL+"api/createmegrendelok/",{
     method: 'POST',
     headers: {
               'Content-Type': "application/json",
@@ -63,38 +137,76 @@ function sendOrder() {
         .catch(error =>{
         console.log(error)
         })
-}
-
-//Function for hour and minute to be visible only
-function HourAndMinute(time) {
-  time = dayjs()
-  return (`${time.hour()}:${time.minute()}`);
-}
-
-console.log(HourAndMinute(orderTime))
+} */
 
 
-const [services, setServices] = useState([ ])
+const sendOrder = async () => {
+  try {
+    const response = await fetch(API_URL+"api/createmegrendelok/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "nev": name,
+        "telefonszam": phone,
+        "email": email,
+        "auto": selectedCarId,
+        "szolgaltatas": selectedServiceOptionIds,
+        "datum": orderDate,
+      }),
+    });
 
-useEffect(() => {
-  fetch(API_URL+"szolgaltatasok/")
-  .then(res => res.json())
-  .then(data => {
-    setServices(data)
-    console.log(data)
-  })
-}, [ ])
+    if (response.ok) {
+      window.alert('Your order has been successfully submitted!'); // added confirmation message
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+  //Function for hour and minute to be visible only
+  function HourAndMinute(time) {
+    time = dayjs()
+    return (`${time.hour()}:${time.minute()}`);
+  }
 
+  //Validations
+  const [error, setError] = useState(false);
 
-const serviceOptions = [
+  const handleEmailChange = (event) => {
+    const value = event.target.value;
+    setEmail(value);
+    setError(!isValidEmail(value));
+  };
 
-]
+  const isValidEmail = (value) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(value);
+  };
+
+  const isHungarianPhoneNumber = (phoneNumber) => {
+    const hungarianPhoneRegex = /^(?:\+36|06)(?:(?:20|30|31|50|70)(?:\s|-)?\d{3}(?:\s|-)?\d{4})$/;
+    return hungarianPhoneRegex.test(phoneNumber);
+  };
+
+  const handlePhoneChange = (event) => {
+    const input = event.target.value;
+    if (isHungarianPhoneNumber(input)) {
+      setPhone(input);
+    } else if (input === "" || /^\d+$/.test(input)) {
+      // Allow empty string and only digits
+      setPhone(input);
+    }
+  };
+
+  const eightAM = dayjs().set('hour', 8).startOf('hour');
+  const eightPM = dayjs().set('hour', 20).startOf('hour');
 
   return (
     <Wrapper id="contact">
       <div className="lightBg">
-        <div className="container">
+        <Container maxWidth="lg">
           <HeaderInfo>
             <h1 className="font40 extraBold">Book an appointment</h1>
             <p className="font13">
@@ -105,20 +217,72 @@ const serviceOptions = [
               <FormControl fullWidth sx={{
                     mb: 2
                   }} >
-                <TextField id="name" label="Name" onChange={(event) => {setName(event.target.value)}} variant="standard" sx={{mb: 2}} ></TextField>
-                <TextField id="email" type={"email"}  label="Email" onChange={(event) => {setEmail(event.target.value)}} sx={{mb: 2}} variant="standard" />
-                <TextField id="phone" type={"phone"} label="Phone" onChange={(event) => {setPhone(event.target.value)}} sx={{mb: 2}} variant="standard" />
-                <ServicesSelect />
-                <FormControl fullWidth sx={{mb: 2}}>
-                <InputLabel id="demo-simple-select-label">Vehicle make</InputLabel>
-                <Select 
-                  id="vehicleMake"
-                  label="Vehicle make"
-                  value={vehicleMake}
-                  size="10px"
-                  onChange={(event) => {setVehicleMake(event.target.value)}}
+                <TextField required id="name" label="Name" onChange={(event) => {setName(event.target.value)}} variant="standard" sx={{mb: 2}} ></TextField>
+                <TextField
+                  id="email"
+                  type="email"
+                  label="Email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  inputMode="email"
+                  error={error}
+                  helperText={error ? 'Please enter a valid email' : ''}
+                  sx={{ mb: 2 }}
+                  variant="standard"
+                  required
+                />
+                <TextField
+                  id="phone"
+                  type="tel"
+                  label="Phone"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  error={!isHungarianPhoneNumber(phone)}
+                  helperText={
+                    !isHungarianPhoneNumber(phone) && "Please enter a valid Hungarian phone number"
+                  }
+                  sx={{ mb: 2 }}
+                  variant="standard"
+                  required
+                />
+                <FormControl sx={{
+                    mb: 2,
+                  }} >
+                  <InputLabel>Select Options</InputLabel>
+                  <Select
+                    id="selectOption"
+                    label="Select Options"
+                    multiple
+                    required
+                    value={selectedServiceOptionIds}
+                    onChange={(e) => setSelectedServiceOptionIds(e.target.value)}
+                    renderValue={(selected) =>
+                      selected
+                        .map((optionId) =>
+                          options.find((option) => option.id === optionId).neve
+                        )
+                        .join(', ')
+                    }
                   >
-                </Select>
+                    {menuItems}
+                  </Select>
+                  <Button variant="contained" onClick={handleClearSelection}>Clear</Button>
+                </FormControl>
+                <FormControl fullWidth sx={{mb: 2}}>
+                <InputLabel id="vehicleMake">Vehicle make</InputLabel>
+                  <Select
+                    id="vehicleMake"
+                    label="Vehicle make"
+                    required
+                    value={selectedCarId}
+                    onChange={handleCarOptionChange}
+                  >
+                    {data.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.marka}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
                 <Input 
                   id="vehicleYear" 
@@ -133,7 +297,7 @@ const serviceOptions = [
                     max: 2023,
                     }
                   }
-                  onChange={(event) => {setVehicleYear(event.target.value)}}
+                  //onChange={(event) => {setVehicleYear(event.target.value)}}
                 />
                 <Slider
                   value={typeof currentYear === 'number' ? currentYear : 0}
@@ -147,98 +311,82 @@ const serviceOptions = [
                   >
               </Slider>
               </FormControl>
-                <FormControl sx={{mb: 2}}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <MobileDatePicker
-                      id="date"
-                      label="Prefarrable date"
-                      format={'YYYY/MM/DD'}
-                      minDate={dayjs()}
-                      defaultValue={dayjs()}
-                      shouldDisableDate={isWeekend}
-                      displayPast={false}
-                      value={orderDate}
-                      onChange={(newOrderDate) => setOrderDate(newOrderDate)}
-                    />
-                  </LocalizationProvider>
-                </FormControl>
-                <FormControl>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <MobileTimePicker
-                      id="time"
-                      label="Prefarrable time"
-                      format="HH:MM"
-                      value={orderTime}
-                      onChange={(newOrderTime) => setOrderTime(newOrderTime)}
-                      sx={{ml: 2}}
-                      minutesStep={15}
-                    />
-                  </LocalizationProvider>
-                  </FormControl>
-              <SumbitWrapper className="flex">
-                <ButtonInput type="submit" value="Book appointment" className="pointer animate radius8" onClick={() => {sendOrder()}} style={{ maxWidth: "220px" }} />
-              </SumbitWrapper>
             </div>
+            <CalendarBox fullWidth>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <StaticDateTimePicker
+                  id="date-time"
+                  label="Preferred date and time"
+                  format="YYYY/MM/DD HH:mm"
+                  orientation="landscape"
+                  step={30}
+                  minDate={dayjs()}
+                  maxTime={eightPM}
+                  minTime={eightAM}
+                  defaultValue={dayjs()}
+                  shouldDisableDate={isWeekend}
+                  displayPast={false}
+                  value={dayjs(`${orderDate} ${orderTime}`, 'YYYY/MM/DD hh:mm')}
+                  onAccept={(newOrderDateTime) => {
+                    setOrderDate(newOrderDateTime.format('YYYY/MM/DD'));
+                    setOrderTime(newOrderDateTime.format('HH:mm'));
+                  }}
+                  />
+              </LocalizationProvider>
+            </CalendarBox>
           </div>
-        </div>
+          <SumbitWrapper className="flex">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                sendOrder();
+              }}
+              style={{ maxWidth: "220px" }}
+            >
+              Book appointment
+            </Button>
+          </SumbitWrapper>
+        </Container>
       </div>
     </Wrapper>
   );
 }
 
-
 const Wrapper = styled.section`
   width: 100%;
 `;
+
 const HeaderInfo = styled.div`
   padding: 70px 0 30px 0;
-  @media (max-width: 860px) {
-    text-align: center;
-  }
+  text-align: center;
 `;
-const From = styled.form`
-  padding: 70px 0 30px 0;
-  input,
-  textarea {
-    width: 100%;
-    background-color: transparent;
-    border: 0px;
-    outline: none;
-    box-shadow: none;
-    border-bottom: 1px solid #707070;
-    height: 30px;
-    margin-bottom: 30px;
-  }
-  textarea {
-    min-height: 100px;
-  }
-  @media (max-width: 860px) {
-    padding: 30px 0;
-  }
-`;
-const ButtonInput = styled.input`
-  border: 1px solid #7620ff;
-  background-color: #7620ff;
-  width: 100%;
-  padding: 15px;
-  outline: none;
-  color: #fff;
-  :hover {
-    background-color: #580cd2;
-    border: 1px solid #7620ff;
-    color: #fff;
-  }
-  @media (max-width: 991px) {
-    margin: 0 auto;
-  }
-`;
-const CalendarBox = styled.div`
-    align-self: right;
-`;
+
 const SumbitWrapper = styled.div`
-  @media (max-width: 991px) {
-    width: 100%;
-    margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const ButtonInput = styled(Button)`
+  background-color: #7620ff;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  max-width: 220px;
+  padding: 12px 16px;
+
+  &:hover {
+    background-color: #9a61ff;
+  }
+`;
+
+const CalendarBox = styled.div`
+  margin-left: 40px;
+
+  @media (max-width: 960px) {
+    margin: 0;
+    margin-top: 20px;
   }
 `;
 
