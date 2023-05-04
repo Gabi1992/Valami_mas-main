@@ -16,7 +16,7 @@ export default function Footer() {
       <Container>
         <Row>
           <Column>
-            <h2>Contact Us</h2>
+            <h2>Kapcsolat</h2>
             <ContactInfo>
               <ContactItem>
                 <LocationOnIcon />
