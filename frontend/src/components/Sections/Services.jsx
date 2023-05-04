@@ -1,68 +1,98 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import styled from "styled-components";
 // Components
 import ServiceBox from "../Elements/ServiceBox";
 // Assets
-import ServiceImg1 from "../../assets/img/services/axle.png";
-import ServiceImg2 from "../../assets/img/services/breaks.png";
-import ServiceImg3 from "../../assets/img/services/tires.png";
-import { API_URL } from "../../constant/apiConstant";
+import ServiceImg1 from "../../assets/img/services/breaks.png";
+import ServiceImg2 from "../../assets/img/services/axle.png";
+import ServiceImg3 from "../../assets/img/services/services.png";
+import ServiceImg4 from "../../assets/img/services/filters.png";
+import ServiceImg5 from "../../assets/img/services/mot.png";
+import ServiceImg6 from "../../assets/img/services/exhaust.png";
+import MOT from "../../assets/img/MOT.jpg";
 
 export default function Services() {
-  
-  const [services, setServices] = useState([ ])
-  const [servicePrice, setServicePrice] = useState([ ])
-  const [serviceTime, setServiceTime] = useState([ ])
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(API_URL+"api/szolgaltatasok/");
-        const data = await response.json();
-        setServices(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
 
   return (
     <Wrapper id="services">
       <div className="lightBg">
         <div className="container">
           <HeaderInfo>
-            <h1 className="font40 extraBold">Services</h1>
-            <p className="font13">
-            Our professionals know how to handle a wide range of car services. Whether you drive a passenger car or medium sized truck or SUV, our mechanics strive to ensure that your vehicle will be performing at its best.
+            <h1 className="font40 extraBold">Szolgáltatások</h1>
+            <p className="font15">
+            Szakembereink jártasak széles körű autószolgáltatások kezelésében. Legyen szó személygépkocsiról, közepes méretű teherautóról vagy terepjáróról, szerelőink mindent megtesznek annak érdekében, hogy járműve a lehető legjobban teljesítsen.
             </p>
           </HeaderInfo>
           <div className="row textCenter">
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
               <ServiceBox
                 id="breaks"
-                img={ServiceImg2}
-                name="BREAKS"
+                img={ServiceImg1}
+                name="FÉKJAVÍTÁS"
+                text="Szakszerű és hatékony fékjavítást biztosítunk autószervizünkben."
               />
             </div>
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
               <ServiceBox
                 id="axle"
-                img={ServiceImg1}
-                name="AXLE"
+                img={ServiceImg2}
+                name="FUTÓMŰ"
+                text="A futómű javítása elengedhetetlen az autó biztonságos és kényelmes vezetése érdekében."
               />
             </div>
-            <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
               <ServiceBox
-                id="tires"
+                id="services"
                 img={ServiceImg3}
-                name="TIRE AND WHEEL SERVICES"
+                name="SZERVÍZ"
+                text="Az autó biztonságos és hosszú élettartamának érdekében fontos a vezérműszíj és a kuplung karbantartása, míg az állapotfelmérés, hibakód kiolvasás/törlés, fényszóró állítás és akkumulátor cseréje biztosítják az autó zavartalan működését."
+              />
+            </div>
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+              <ServiceBox
+                id="filters"
+                img={ServiceImg4}
+                name="SZŰRŐK"
+                text="Az autókban levő szűrők rendszeres cseréje elengedhetetlen az autó motorjának hosszú élettartama és hatékony működése szempontjából."
+              />
+            </div>
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+              <ServiceBox
+                id="mot"
+                img={ServiceImg5}
+                name="MŰSZAKI VIZSGA"
+                text="Az autók műszaki vizsgája Magyarországon a közlekedésbiztonságot és a járművek megfelelőségét ellenőrzi, amely nélkül a közlekedés tilos. A vizsga az állami hatóság által felügyelt vizsgaállomásokon történik, és tartalmazza a jármű műszaki állapotának és környezeti előírásainak megfelelőségét."
+              />
+            </div>
+            <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+              <ServiceBox
+                id="exhaust"
+                img={ServiceImg6}
+                name="KIPUFOGÓ RENDSZER"
+                text="Az autók kipufogó rendszerének szervizelése fontos a jármű hatékony működése és környezetvédelmi előírásoknak való megfelelése szempontjából."
               />
             </div>
           </div>
+        </div>
+      </div>
+      <div className="lightBg">
+        <div className="container">
+          <Advertising className="flexSpaceCenter">
+            <AddLeft>
+              <AddLeftInner>
+                <ImgWrapper className="flexCenter">
+                  <img className="radius8" src={MOT} alt="add" />
+                </ImgWrapper>
+              </AddLeftInner>
+            </AddLeft>
+            <AddRight>
+              <h4 className="font15 semiBold">carHouse egy állami hatóság által felügyelt vizsgaállomás</h4>
+              <h2 className="font40 extraBold">A műszaki vizsga</h2>
+              <p className="font13">
+              Tartalmazza a jármű műszaki állapotának és környezeti előírásainak megfelelőségét. Magyarországon a közlekedésbiztonságot és a járművek megfelelőségét ellenőrzi, amely nélkül a közlekedés tilos.
+              </p>
+            </AddRight>
+          </Advertising>
         </div>
       </div>
     </Wrapper>
@@ -78,7 +108,7 @@ const HeaderInfo = styled.div`
   }
 `;
 const Advertising = styled.div`
-  padding: 100px 0;
+  padding: 200px 0;
   margin: 100px 0;
   position: relative;
   @media (max-width: 1160px) {
@@ -88,11 +118,6 @@ const Advertising = styled.div`
     flex-direction: column;
     padding: 0 0 30px 0;
     margin: 80px 0 0px 0;
-  }
-`;
-const ButtonsRow = styled.div`
-  @media (max-width: 860px) {
-    justify-content: space-between;
   }
 `;
 const AddLeft = styled.div`

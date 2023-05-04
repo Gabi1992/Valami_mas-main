@@ -5,19 +5,22 @@ import { Link } from "react-scroll";
 import FullButton from "../Buttons/FullButton";
 // Assets
 import HeaderImage from "../../assets/img/header-img.png";
+import QuotesIcon from "../../assets/svg/Quotes";
+import Dots from "../../assets/svg/Dots";
+
 
 export default function Header() {
   return (
     <Wrapper id="home" className="container flexSpaceCenter">
       <LeftSide className="flexCenter">
         <div>
-          <h1 className="extraBold font60">Full service car repair</h1>
+          <h1 className="extraBold font60">Teljeskörű autószerviz</h1>
           <HeaderP className="font13 semiBold">
-             Since 1992 we’ve provided full-service auto repair and car care in Debrecen at Nagydirko street 11.
+          Az 1992 óta működő vállalkozásunk teljes körű autójavítási és autóápolási szolgáltatásokat kínál Debrecen városában, a Nagydirkó utca 11. szám alatt.
           </HeaderP>
           <BtnWrapper>
             <Link to="contact" spy={true} smooth={true} offset={-80}>
-              <FullButton title="Appointment" />
+              <FullButton title="Foglalás" />
             </Link>
           </BtnWrapper>
         </div>
@@ -25,7 +28,22 @@ export default function Header() {
       <RightSide>
         <ImageWrapper>
           <Img className="radius8" src={HeaderImage} alt="garage" style={{zIndex: 9}} />
+          <QuoteWrapper className="flexCenter darkBg radius8">
+            <QuotesWrapper>
+              <QuotesIcon />
+            </QuotesWrapper>
+            <div>
+              <p className="font15 whiteColor">
+                <em>Az autód a legjobb formájában tartása nemcsak szükségszerűség, hanem a biztonság és megbízhatóság iránti elkötelezettséged tükröződése az úton.</em>
+              </p>
+              <p className="font13 orangeColor textRight" style={{marginTop: '10px'}}>Andirkó Ádám Ferenc</p>
+            </div>
+          </QuoteWrapper>
+          <DotsWrapper>
+            <Dots />
+          </DotsWrapper>
         </ImageWrapper>
+        <GreyDiv className="lightBg"></GreyDiv>
       </RightSide>
     </Wrapper>
   );

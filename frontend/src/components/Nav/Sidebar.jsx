@@ -32,7 +32,7 @@ export default function Sidebar({ sidebarOpen, toggleSidebar }) {
             smooth={true}
             offset={-60}
           >
-            Home
+            Főoldal
           </Link>
         </li>
         <li className="semiBold font15 pointer">
@@ -46,7 +46,7 @@ export default function Sidebar({ sidebarOpen, toggleSidebar }) {
             smooth={true}
             offset={-60}
           >
-            Services
+            Szolgáltatások
           </Link>
         </li>
         <li className="semiBold font15 pointer">
@@ -55,12 +55,12 @@ export default function Sidebar({ sidebarOpen, toggleSidebar }) {
             activeClass="active"
             className="whiteColor"
             style={{ padding: "10px 15px" }}
-            to="projects"
+            to="pricing"
             spy={true}
             smooth={true}
             offset={-60}
           >
-            Pricing
+            Áraink
           </Link>
         </li>
         <li className="semiBold font15 pointer">
@@ -69,12 +69,12 @@ export default function Sidebar({ sidebarOpen, toggleSidebar }) {
             activeClass="active"
             className="whiteColor"
             style={{ padding: "10px 15px" }}
-            to="blog"
+            to="contact"
             spy={true}
             smooth={true}
             offset={-60}
           >
-            Contact
+            Kapcsolat
           </Link>
         </li>
         <li className="semiBold font15 pointer">
@@ -109,7 +109,7 @@ export default function Sidebar({ sidebarOpen, toggleSidebar }) {
       <UlStyle className="flexSpaceCenter">
         <li className="semiBold font15 pointer flexCenter">
           <a href="/" className="radius8 lightBg" style={{ padding: "10px 15px" }}>
-            Appointment
+            Foglalás
           </a>
         </li>
       </UlStyle>

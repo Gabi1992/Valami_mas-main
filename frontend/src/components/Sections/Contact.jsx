@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from '@mui/material/Select';
-import Slider, { SliderMarkLabel } from '@mui/material/Slider';
 import dayjs from 'dayjs';
 import { API_URL } from "../../constant/apiConstant";
-import { FormControl, Input, InputLabel, TextField, MenuItem, Checkbox, ListSubheader, Button } from "@mui/material";
+import { useMediaQuery, FormControl, InputLabel, TextField, MenuItem, Checkbox, ListSubheader, Button } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import Container from '@mui/material/Container';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimeField } from '@mui/x-date-pickers';
+import FormHelperText from '@mui/material/FormHelperText';
 
 export default function Contact() {
 
@@ -16,6 +18,10 @@ export default function Contact() {
   const [options, setOptions] = useState([]);
   const [selectedServiceOptions, setSelectedServiceOptions] = useState([]);
   const [selectedServiceOptionIds, setSelectedServiceOptionIds] = useState([]);
+  const isSmallScreen = useMediaQuery('(max-width:960px)');
+
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +36,19 @@ export default function Contact() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // Calculate total price and time whenever the selected menu items change
+    let newTotalPrice = 0;
+    let newTotalTime = 0;
+    selectedServiceOptions.forEach((optionId) => {
+      const option = options.find((option) => option.id === optionId);
+      newTotalPrice += option.ara;
+      newTotalTime += option.ido;
+    });
+    setTotalPrice(newTotalPrice);
+    setTotalTime(newTotalTime);
+  }, [selectedServiceOptions, options]);
 
   const handleServiceOptionToggle = (option) => {
     const currentIndex = selectedServiceOptions.indexOf(option.id);
@@ -69,6 +88,9 @@ export default function Contact() {
     ))
   ]));
 
+  const showHelperText = selectedServiceOptionIds.length > 0;
+
+
   //Cars dropdown and storage
   const [data, setData] = useState([]);
   const [selectedCarId, setSelectedCarId] = useState("");
@@ -98,78 +120,39 @@ export default function Contact() {
     setSelectedServiceOptionIds([]);
   }
 
-  const getCurrentYear = () => {
-    return new Date().getFullYear();
-  }
-
-
   //Variables to be POSTed
-  const [currentYear, setCurrentYear] = React.useState(getCurrentYear);
   const [name, setName] = useState([ ])
   const [email, setEmail] = useState([ ])
   const [phone, setPhone] = useState([ ])
   const [orderDate, setOrderDate] = useState(dayjs().format('YYYY/MM/DD'));
   const [orderTime, setOrderTime] = useState(dayjs())
+  const [vehicleYear, setVehicleYear] = useState('');
 
-  const handleSliderChange = (event, newValue) => {
-    setCurrentYear(newValue);
+
+  const sendOrder = async () => {
+    try {
+      const response = await fetch(API_URL+"api/createmegrendelok/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          "nev": name,
+          "telefonszam": phone,
+          "email": email,
+          "auto": selectedCarId,
+          "szolgaltatas": selectedServiceOptionIds,
+          "datum": orderDate,
+        }),
+      });
+
+      if (response.ok) {
+        window.alert('Sikeres megrendelés!');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
-
-//Sending order function
-/* function sendOrder() { 
-  let data = {
-    "nev": name,
-    "telefonszam": phone,
-    "email": email,
-    "auto": selectedCarId,
-    "szolgaltatas": selectedServiceOptionIds,
-    "datum": orderDate,
-    }
-  
-  fetch(API_URL+"api/createmegrendelok/",{
-    method: 'POST',
-    headers: {
-              'Content-Type': "application/json",
-    },
-    body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .catch(error =>{
-        console.log(error)
-        })
-} */
-
-
-const sendOrder = async () => {
-  try {
-    const response = await fetch(API_URL+"api/createmegrendelok/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "nev": name,
-        "telefonszam": phone,
-        "email": email,
-        "auto": selectedCarId,
-        "szolgaltatas": selectedServiceOptionIds,
-        "datum": orderDate,
-      }),
-    });
-
-    if (response.ok) {
-      window.alert('Your order has been successfully submitted!'); // added confirmation message
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-  //Function for hour and minute to be visible only
-  function HourAndMinute(time) {
-    time = dayjs()
-    return (`${time.hour()}:${time.minute()}`);
-  }
 
   //Validations
   const [error, setError] = useState(false);
@@ -205,19 +188,19 @@ const sendOrder = async () => {
 
   return (
     <Wrapper id="contact">
-      <div className="lightBg">
+      <div className="whiteBg">
         <Container maxWidth="lg">
           <HeaderInfo>
-            <h1 className="font40 extraBold">Book an appointment</h1>
+            <h1 className="font40 extraBold">Foglaljon időpontot</h1>
             <p className="font13">
             </p>
           </HeaderInfo>
-          <div className="row" style={{ paddingBottom: "30px" }}>
+          <div className="row" style={{}}>
             <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
               <FormControl fullWidth sx={{
                     mb: 2
                   }} >
-                <TextField required id="name" label="Name" onChange={(event) => {setName(event.target.value)}} variant="standard" sx={{mb: 2}} ></TextField>
+                <TextField required id="name" label="Név" onChange={(event) => {setName(event.target.value)}} variant="standard" sx={{mb: 2}} ></TextField>
                 <TextField
                   id="email"
                   type="email"
@@ -234,13 +217,11 @@ const sendOrder = async () => {
                 <TextField
                   id="phone"
                   type="tel"
-                  label="Phone"
+                  label="Telefonszám"
                   value={phone}
+                  defaultValue={""}
                   onChange={handlePhoneChange}
-                  error={!isHungarianPhoneNumber(phone)}
-                  helperText={
-                    !isHungarianPhoneNumber(phone) && "Please enter a valid Hungarian phone number"
-                  }
+                  helperText={"Például: 06301231234"}
                   sx={{ mb: 2 }}
                   variant="standard"
                   required
@@ -248,10 +229,10 @@ const sendOrder = async () => {
                 <FormControl sx={{
                     mb: 2,
                   }} >
-                  <InputLabel>Select Options</InputLabel>
+                  <InputLabel>Válassz szolgáltatást</InputLabel>
                   <Select
                     id="selectOption"
-                    label="Select Options"
+                    label="Válassz szolgáltatást"
                     multiple
                     required
                     value={selectedServiceOptionIds}
@@ -263,16 +244,17 @@ const sendOrder = async () => {
                         )
                         .join(', ')
                     }
-                  >
+                    >
                     {menuItems}
                   </Select>
-                  <Button variant="contained" onClick={handleClearSelection}>Clear</Button>
+                  <FormHelperText>{showHelperText ? `Összesen: ${totalPrice} HUF*, Időtartam ${totalTime} perc*` : null}</FormHelperText>
+                  <Button variant="contained" size="small" onClick={handleClearSelection}>Törlés</Button>
                 </FormControl>
                 <FormControl fullWidth sx={{mb: 2}}>
-                <InputLabel id="vehicleMake">Vehicle make</InputLabel>
+                <InputLabel id="vehicleMake">Autó márkája</InputLabel>
                   <Select
                     id="vehicleMake"
-                    label="Vehicle make"
+                    label="Autó márkája"
                     required
                     value={selectedCarId}
                     onChange={handleCarOptionChange}
@@ -283,43 +265,50 @@ const sendOrder = async () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  <FormControl fullWidth sx={{mt: 2}}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Autó évjárata"
+                      views={['year']}
+                      value={dayjs()}
+                      onChange={(newValue) => {
+                        setVehicleYear(newValue);
+                      }}
+                      inputFormat="yyyy"
+                      maxDate={dayjs()}
+                    />
+                  </LocalizationProvider>
+                  </FormControl>
                 </FormControl>
-                <Input 
-                  id="vehicleYear" 
-                  value={currentYear}
-                  label="Vehicle year"
-                  disabled
-                  size="small"
-                  variant="filled"
-                  inputProps={{
-                    step: 1,
-                    min: 1950,
-                    max: 2023,
-                    }
-                  }
-                  //onChange={(event) => {setVehicleYear(event.target.value)}}
-                />
-                <Slider
-                  value={typeof currentYear === 'number' ? currentYear : 0}
-                  onChange={handleSliderChange}       
-                  size="small"
-                  label="kkk"
-                  defaultValue={2023}
-                  marks
-                  min={1950}
-                  max={2023}
-                  >
-              </Slider>
               </FormControl>
             </div>
-            <CalendarBox fullWidth>
+            <CalendarBox>
+            {isSmallScreen ? (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimeField
+                label="Preferált dátum és idő"
+                minutesStep={20}
+                sx={{ 
+                  margin: 2,
+                  mt: 1
+                }}
+                value={dayjs(`${orderDate} ${orderTime}`, 'YYYY/MM/DD hh:mm')}
+                onChange={(newOrderDateTime) => {
+                  setOrderDate(newOrderDateTime.format('YYYY/MM/DD'));
+                  setOrderTime(newOrderDateTime.format('HH:mm'));
+                }}
+                inputFormat="YYYY/MM/DD HH:mm"
+                renderInput={(params) => <TextField {...params} />}
+              />
+              </LocalizationProvider>
+            ) : (
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <StaticDateTimePicker
                   id="date-time"
-                  label="Preferred date and time"
+                  label="Preferált dátum és idő"
                   format="YYYY/MM/DD HH:mm"
                   orientation="landscape"
-                  step={30}
+                  minutesStep={20}
                   minDate={dayjs()}
                   maxTime={eightPM}
                   minTime={eightAM}
@@ -327,15 +316,17 @@ const sendOrder = async () => {
                   shouldDisableDate={isWeekend}
                   displayPast={false}
                   value={dayjs(`${orderDate} ${orderTime}`, 'YYYY/MM/DD hh:mm')}
-                  onAccept={(newOrderDateTime) => {
+                  onChange={(newOrderDateTime) => {
                     setOrderDate(newOrderDateTime.format('YYYY/MM/DD'));
                     setOrderTime(newOrderDateTime.format('HH:mm'));
                   }}
-                  />
+                  hideTabs={true}
+                />
               </LocalizationProvider>
-            </CalendarBox>
+            )}
+          </CalendarBox>
           </div>
-          <SumbitWrapper className="flex">
+          <SumbitWrapper className="flex" style={{paddingBottom:"30px"}}>
             <Button
               variant="contained"
               color="primary"
@@ -344,7 +335,7 @@ const sendOrder = async () => {
               }}
               style={{ maxWidth: "220px" }}
             >
-              Book appointment
+              Foglalas
             </Button>
           </SumbitWrapper>
         </Container>
@@ -368,25 +359,14 @@ const SumbitWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ButtonInput = styled(Button)`
-  background-color: #7620ff;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 16px;
-  max-width: 220px;
-  padding: 12px 16px;
-
-  &:hover {
-    background-color: #9a61ff;
-  }
-`;
-
 const CalendarBox = styled.div`
-  margin-left: 40px;
-
+  margin: 0 0 20px 40px;
+  
   @media (max-width: 960px) {
-    margin: 0;
-    margin-top: 20px;
+    margin: 0 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 `;
 

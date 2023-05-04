@@ -57,11 +57,11 @@ export default function Pricing() {
 
   return (
     <Wrapper id="pricing">
-      <Header>
-        <h1>Check Our Pricing</h1>
-        <p>Choose from our range of affordable services</p>
-      </Header>
-      <TablesWrapper>{categories}</TablesWrapper>
+        <Header>
+          <h1>Tekintse át árainkat</h1>
+          <p>Válasszon széleskörű, megfizethető szolgáltatásainkból.</p>
+        </Header>
+        <TablesWrapper>{categories}</TablesWrapper>
     </Wrapper>
   );
 }
@@ -98,7 +98,7 @@ const TablesWrapper = styled.div`
 `;
 
 const TableBox = styled.div`
-  width: calc(33.33% - 16px);
+  width: calc(33% - 16px);
   margin-bottom: 32px;
   @media (max-width: 1024px) {
     width: calc(50% - 16px);

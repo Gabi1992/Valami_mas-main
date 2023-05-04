@@ -10,8 +10,8 @@ export default function ServiceBox({ img, name, text, action}) {
           <img className="radius8" src={img} alt="project"></img>
         </ImgBtn>
       </Link>
-      <h3 className="font20 extraBold" style={{ fontVariant: "all-small-caps" }}>{name}</h3>
-      <p className="font13">{text}</p>
+      <h3 className="font30 extraBold" style={{ fontVariant: "all-small-caps" }}>{name}</h3>
+      <p className="font14">{text}</p>
     </Wrapper>
   );
 }

@@ -28,7 +28,7 @@ export default function TopNavbar() {
         <NavInner className="container flexSpaceCenter">
           <Link className="pointer flexNullCenter" to="home" smooth={true}>
             <GarageIcon />
-            <h1 style={{ marginLeft: "10px", marginTop: "13px" }} className="font20 extraBold">
+            <h1 style={{ marginLeft: "10px", marginTop: "20px" }} className="font20 extraBold">
               carHouse
             </h1>
           </Link>
@@ -38,22 +38,22 @@ export default function TopNavbar() {
           <UlWrapper className="flexNullCenter">
             <li className="semiBold font15 pointer">
               <Link activeClass="active" style={{ padding: "10px 15px" }} to="home" spy={true} smooth={true} offset={-80}>
-                Home
+                Főoldal
               </Link>
             </li>
             <li className="semiBold font15 pointer">
               <Link activeClass="active" style={{ padding: "10px 15px" }} to="services" spy={true} smooth={true} offset={-80}>
-                Services
+                Szolgáltatások
               </Link>
             </li>
             <li className="semiBold font15 pointer">
               <Link activeClass="active" style={{ padding: "10px 15px" }} to="pricing" spy={true} smooth={true} offset={-80}>
-                Pricing
+                Áraink
               </Link>
             </li>
             <li className="semiBold font15 pointer">
               <Link activeClass="active" style={{ padding: "10px 15px" }} to="contact" spy={true} smooth={true} offset={-80}>
-                Contact
+                Kapcsolat
               </Link>
             </li>
             <li className="semiBold font15 pointer">
@@ -69,7 +69,7 @@ export default function TopNavbar() {
             <li className="semiBold font15 pointer flexCenter">
               <Link to="contact" spy={true} smooth={true} offset={-80}>
                 <a href="/" className="radius8 lightBg" style={{ padding: "10px 15px" }}>
-                  Appointment
+                  Foglalás
                 </a>
               </Link>
             </li>
