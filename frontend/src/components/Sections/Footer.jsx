@@ -134,7 +134,7 @@ const SocialMediaIcons = styled.div`
 const BottomBar = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: right;
   margin-top: 10px;
 
   p {
